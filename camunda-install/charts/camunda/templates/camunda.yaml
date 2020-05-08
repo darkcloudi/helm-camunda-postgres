@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "camunda.fullname" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }} 
+  selector:
+    matchLabels:
+      app: {{ include "camunda.fullname" . }} 
+  template:
+    metadata: 
+      labels:
+        app: {{ include "camunda.fullname" . }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: postgres-secret
+          secret:
+            secretName: dev-postgres-secret
+      containers:
+      - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: {{ include "camunda.fullname" . }}
+        volumeMounts:
+          - mountPath: "/var/secrets"
+            name: postgres-secret
+            readOnly: true
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+
+
+              
+

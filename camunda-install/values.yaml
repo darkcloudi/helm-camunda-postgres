@@ -1,0 +1,20 @@
+postgres:
+  secret:
+      username: admin
+      password: password
+  ingress:
+    enabled: false
+
+camunda:
+  ingress:
+    enabled: true
+    
+tags:
+  camunda: true
+  database: false
+
+ingress:
+  hosts:
+    - host:
+        domain: camunda.minikube.local
+        chart: camunda

@@ -1,0 +1,78 @@
+secret:
+#  postgres_username: "YWRtaW4="
+#  postgres_password: "cGFzc3dvcmQ="
+  postgres_username: "admin"
+  postgres_password: "password"
+
+postgres:
+  name: postgresql
+  dbname : "db0"
+  postgresDB : "camunda"
+  
+image:
+  repository: postgres
+  tag: "12.2"
+  pullPolicy : IfNotPresent
+
+service:
+  type: NodePort
+  port: 5432
+  targetPort : 5432
+  nodePort : 30001
+
+replicaCount: 1
+
+autoScaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+securityContext:
+  enabled: true
+  runAsGroup: 3000
+  runAsUser: 1001
+  fsGroup: 2000
+
+ldap:
+  enabled: false
+
+volumePermissions:
+  enabled: true
+  securityContext:
+    runAsUser: 0
+
+persistence:
+  enabled: true
+  mountPath: /var/lib/postgresql/data
+  subPath : ""
+  accessModes: [ReadWriteOnce]
+  ## Storage Capacity for persistent volume
+  size: 10Gi
+  annotations: {}
+
+volume:
+  storage: 100Mi
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+imagePullSecrets: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

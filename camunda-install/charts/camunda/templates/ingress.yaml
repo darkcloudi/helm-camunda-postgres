@@ -1,0 +1,18 @@
+{{- if .Values.ingress.enabled }}
+
+{{- $fullName := include "camunda.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "camunda.fullname" . }}-ingress
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{  $fullName }}
+          servicePort: {{ $svcPort}}
+{{- end }}

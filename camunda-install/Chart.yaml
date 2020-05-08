@@ -1,0 +1,19 @@
+apiVersion: v2
+name: camunda-installation
+appVersion: "0.1"
+description: A Helm chart for Camunda Installation with postgres 
+version: 0.1.0
+type: application
+keywords:
+ - camunda
+ - postgres
+dependencies:
+  - name: camunda
+    version: 0.1.0
+    tags:
+      - camunda
+  - name: postgres
+    version: 0.1.0
+    tags:
+      - database
+      - postgres

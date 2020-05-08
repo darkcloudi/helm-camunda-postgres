@@ -1,0 +1,62 @@
+config:
+  app_name: "Camunda Application"
+
+image:
+  repository: camunda/camunda-bpm-platform
+  tag: "7.12.0"
+  pullPolicy : IfNotPresent
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 30000
+
+ingress:
+  enabled: true
+  host: camunda.minikube.local
+  tls: []
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  
+replicaCount: 1
+
+autoScaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+livenessProbe:
+  enabled: true
+  readinessPath: '/engine-rest/version'
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+readinessProbe:
+  enabled: false
+  livenessPath: '/engine-rest/version'
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+imagePullSecrets: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

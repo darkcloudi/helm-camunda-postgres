@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  {{- if not .Values.autoScaling.enabled }}
+  replicas: {{ .Values.replicaCount }} 
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "postgres.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "postgres.fullname" . }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name:  {{ include "postgres.fullname" . }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: "/var/secrets"
+            name: postgres-secret
+            readOnly: true
+          ports:
+            - name: postgres-http
+              containerPort: 5432
+              protocol: TCP
+          env:
+            {{- if .Values.persistence.enabled }}
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.postgresDB }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgres.fullname" . }}-secret
+                  key: postgres-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgres.fullname" . }}-secret
+                  key: postgres-password
+            {{- end }}
+      volumes:
+        - hostPath:
+            path: {{ .Values.persistence.mountPath }}
+          name: camunda-pgdata
+        - name: postgres-secret
+          secret:
+            secretName: {{ include "postgres.fullname" . }}-secret
