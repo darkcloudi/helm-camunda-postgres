@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "postgres.fullname" . }}-svc
   labels:
-    name: {{ include "postgres.fullname" . }}
+    app: {{ include "postgres.fullname" . }}
 spec:
   type:  {{ .Values.service.type }}
   ports:
